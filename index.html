@@ -586,10 +586,62 @@
       margin-right: 4px;
     }
 
+    /* ─── VISITOR COUNTER ─── */
+    .visitor-counter {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-top: 50px;
+      padding: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .visitor-counter::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--secondary), transparent);
+    }
+
+    .visitor-counter-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--secondary);
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .visitor-badge-wrap {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .visitor-badge-wrap img {
+      height: 28px;
+      border-radius: 6px;
+      box-shadow: 0 0 12px rgba(0,207,255,0.3);
+    }
+
+    .visitor-note {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
     /* ─── FOOTER ─── */
     .footer {
       text-align: center;
-      margin-top: 60px;
+      margin-top: 30px;
       color: var(--text-muted);
       font-size: 0.82rem;
     }
@@ -812,6 +864,23 @@
     </div>
 
     <div class="glow-line"></div>
+
+    <!-- ─── VISITOR COUNTER ─── -->
+    <div class="visitor-counter reveal">
+      <div class="visitor-counter-title">
+        <i class="fas fa-chart-bar"></i>
+        إحصائيات الزوار
+      </div>
+      <div class="visitor-badge-wrap">
+        <img
+          src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2FMohamed01032.github.io&count_bg=%2300FF88&title_bg=%230D1B2A&icon=shieldcheck.svg&icon_color=%2300FF88&title=%D8%B2%D9%8A%D8%A7%D8%B1%D8%A7%D8%AA+%D8%A7%D9%84%D9%8A%D9%88%D9%85&edge_flat=false"
+          alt="عداد زوار اليوم" />
+        <img
+          src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2FMohamed01032.github.io&count_bg=%2300CFFF&title_bg=%230D1B2A&icon=shieldcheck.svg&icon_color=%2300CFFF&title=%D8%A5%D8%AC%D9%85%D8%A7%D9%84%D9%8A+%D8%A7%D9%84%D8%B2%D9%8A%D8%A7%D8%B1%D8%A7%D8%AA&edge_flat=false"
+          alt="إجمالي الزيارات" />
+      </div>
+      <p class="visitor-note">📊 يتم تحديث العداد تلقائياً مع كل زيارة</p>
+    </div>
 
     <!-- ─── FOOTER ─── -->
     <footer class="footer">
