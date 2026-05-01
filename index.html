@@ -1330,6 +1330,8 @@
             addMessage("Sorry, the current API key has been disabled (Leaked API Key). Please replace it in the code.", 'bot');
         } else if (error.status === 404) {
             addMessage("Sorry, the API key is invalid for this model or has been suspended. Please renew the key.", 'bot');
+        } else if (error.status === 429) {
+            addMessage("Too many requests! Please wait a minute and try again.", 'bot');
         } else {
             addMessage("An error occurred while connecting to Gemini servers. Check the API Key.", 'bot');
         }
