@@ -1168,7 +1168,7 @@
       <button class="chat-close" id="chatClose"><i class="fa-solid fa-times"></i></button>
     </div>
     <div class="chat-body" id="chatBody">
-      <div class="chat-msg msg-bot">مرحباً! أنا المساعد الذكي الخاص بـ محمد السعيد فكري (Cyber Security Student). كيف يمكنني مساعدتك اليوم؟</div>
+      <div class="chat-msg msg-bot">Hello! I am the AI Assistant for Mohammed Elsaeed Fekry (Cyber Security Student). How can I help you today?</div>
       <div class="typing-indicator" id="typingIndicator">
         <div class="typing-dot"></div>
         <div class="typing-dot"></div>
@@ -1176,7 +1176,7 @@
       </div>
     </div>
     <div class="chat-input-area">
-      <input type="text" id="chatInput" placeholder="اكتب سؤالك هنا..." autocomplete="off" />
+      <input type="text" id="chatInput" placeholder="Type your message here..." autocomplete="off" />
       <button id="chatSend"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
   </div>
@@ -1296,7 +1296,7 @@
           },
           body: JSON.stringify({
             systemInstruction: {
-              parts: [{ text: 'أنت مساعد ذكي احترافي خاص بمحمد السعيد فكري (Mohammed Elsaeed Fekry)، طالب أمن سيبراني في جامعة الدلتا للعلوم والتكنولوجيا (Delta University). تجيب على أسئلة الزوار بأسلوب لبق، محترف، ومختصر باللغة العربية. مهارات محمد تشمل: Network Security, Linux, Ethical Hacking, Python, OSINT.' }]
+              parts: [{ text: 'You are a professional AI assistant for Mohammed Elsaeed Fekry, a Cyber Security student at Delta University for Science and Technology. Answer visitor questions in a polite, professional, and concise manner in English. Mohammed skills include: Network Security, Linux, Ethical Hacking, Python, OSINT.' }]
             },
             contents: conversationHistory
           })
