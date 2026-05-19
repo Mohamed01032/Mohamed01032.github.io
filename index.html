@@ -213,6 +213,35 @@
       font-weight: 400;
     }
 
+    /* ─── LANG SWITCH ─── */
+    .lang-switch {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 20px;
+    }
+
+    #lang-toggle {
+      background: rgba(0, 255, 136, 0.1);
+      border: 1px solid var(--border);
+      color: var(--primary);
+      padding: 8px 18px;
+      border-radius: 50px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+
+    #lang-toggle:hover {
+      background: rgba(0, 255, 136, 0.2);
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+      transform: translateY(-2px);
+    }
+
     /* ─── TERMINAL TYPING ─── */
     .terminal-box {
       background: var(--bg-card2);
@@ -983,6 +1012,11 @@
 
   <div class="wrapper">
 
+    <!-- ─── LANG SWITCH ─── -->
+    <div class="lang-switch">
+      <button id="lang-toggle">عربي <i class="fas fa-globe"></i></button>
+    </div>
+
     <!-- ─── HERO ─── -->
     <section class="hero reveal">
       <div class="avatar-ring">
@@ -992,10 +1026,10 @@
       </div>
 
       <div class="hero-info">
-        <h1 class="hero-name">Mohammed Elsaeed Fekry</h1>
-        <p class="hero-name-en">Cyber Security Professional</p>
-        <span class="hero-badge"><i class="fas fa-shield-halved"></i> Cyber Security Student</span>
-        <p class="hero-uni">🎓 Delta University for Science and Technology</p>
+        <h1 class="hero-name" data-en="Mohammed Elsaeed Fekry" data-ar="محمد السعيد فكري">Mohammed Elsaeed Fekry</h1>
+        <p class="hero-name-en" data-en="Cyber Security Professional" data-ar="محترف أمن سيبراني">Cyber Security Professional</p>
+        <span class="hero-badge"><i class="fas fa-shield-halved"></i> <span data-en="Cyber Security Student" data-ar="طالب أمن سيبراني">Cyber Security Student</span></span>
+        <p class="hero-uni" data-en="🎓 Delta University for Science and Technology" data-ar="🎓 جامعة الدلتا للعلوم والتكنولوجيا">🎓 Delta University for Science and Technology</p>
       </div>
 
       <!-- Terminal -->
@@ -1015,47 +1049,47 @@
 
       <!-- Info Card -->
       <div class="card reveal">
-        <div class="card-title"><i class="fas fa-user-circle"></i> Personal Information</div>
+        <div class="card-title"><i class="fas fa-user-circle"></i> <span data-en="Personal Information" data-ar="المعلومات الشخصية">Personal Information</span></div>
         <div class="info-list">
           <div class="info-item">
             <i class="fas fa-user"></i>
-            <div><strong>Name:</strong> <span>Mohammed Elsaeed Fekry</span></div>
+            <div><strong data-en="Name:" data-ar="الاسم:">Name:</strong> <span data-en="Mohammed Elsaeed Fekry" data-ar="محمد السعيد فكري">Mohammed Elsaeed Fekry</span></div>
           </div>
           <div class="info-item">
             <i class="fas fa-university"></i>
-            <div><strong>University:</strong> <span>Delta University for Science and Technology</span></div>
+            <div><strong data-en="University:" data-ar="الجامعة:">University:</strong> <span data-en="Delta University for Science and Technology" data-ar="جامعة الدلتا للعلوم والتكنولوجيا">Delta University for Science and Technology</span></div>
           </div>
           <div class="info-item">
             <i class="fas fa-shield-halved"></i>
-            <div><strong>Specialization:</strong> <span>Cyber Security</span></div>
+            <div><strong data-en="Specialization:" data-ar="التخصص:">Specialization:</strong> <span data-en="Cyber Security" data-ar="الأمن السيبراني">Cyber Security</span></div>
           </div>
           <div class="info-item">
             <i class="fas fa-map-marker-alt"></i>
-            <div><strong>Country:</strong> <span>Egypt 🇪🇬</span></div>
+            <div><strong data-en="Country:" data-ar="البلد:">Country:</strong> <span data-en="Egypt 🇪🇬" data-ar="مصر 🇪🇬">Egypt 🇪🇬</span></div>
           </div>
           <div class="info-item">
             <i class="fas fa-circle-dot"></i>
-            <div><strong>Status:</strong> <span style="color:var(--primary)">Available for Contact ✅</span></div>
+            <div><strong data-en="Status:" data-ar="الحالة:">Status:</strong> <span style="color:var(--primary)" data-en="Available for Contact ✅" data-ar="متاح للتواصل ✅">Available for Contact ✅</span></div>
           </div>
         </div>
       </div>
 
       <!-- QR Card -->
       <div class="card reveal">
-        <div class="card-title"><i class="fas fa-qrcode"></i> Business Key</div>
+        <div class="card-title"><i class="fas fa-qrcode"></i> <span data-en="Business Key" data-ar="بطاقة العمل">Business Key</span></div>
         <div class="qr-section">
-          <div class="qr-label"><i class="fas fa-key"></i> Scan to Connect</div>
+          <div class="qr-label"><i class="fas fa-key"></i> <span data-en="Scan to Connect" data-ar="امسح للتواصل">Scan to Connect</span></div>
           <div class="qr-frame">
             <img src="qr.jpg" alt="QR Code - Business Key" id="qr-img"
               onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22 fill=%22none%22><rect width=%22100%22 height=%22100%22 fill=%22white%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 font-size=%2210%22 fill=%22black%22>QR Code</text></svg>'" />
           </div>
-          <p class="qr-subtitle">📱 Point your camera at the code for direct contact</p>
+          <p class="qr-subtitle" data-en="📱 Point your camera at the code for direct contact" data-ar="📱 وجه كاميرا هاتفك للرمز للتواصل المباشر">📱 Point your camera at the code for direct contact</p>
         </div>
       </div>
 
       <!-- Skills Card -->
       <div class="card reveal">
-        <div class="card-title"><i class="fas fa-code"></i> Technical Skills</div>
+        <div class="card-title"><i class="fas fa-code"></i> <span data-en="Technical Skills" data-ar="المهارات التقنية">Technical Skills</span></div>
         <div class="skills-list">
           <div class="skill-item">
             <div class="skill-label"><span>Network Security</span><span>80%</span></div>
@@ -1092,7 +1126,7 @@
 
       <!-- Social -->
       <div class="card reveal">
-        <div class="card-title"><i class="fas fa-satellite-dish"></i> Social Media</div>
+        <div class="card-title"><i class="fas fa-satellite-dish"></i> <span data-en="Social Media" data-ar="التواصل الاجتماعي">Social Media</span></div>
         <div class="social-grid">
           <a id="linkedin-link" class="social-link linkedin"
             href="https://www.linkedin.com/in/mohammed-elsaeed-954a01356/" target="_blank" rel="noopener">
@@ -1131,20 +1165,20 @@
     <div class="visitor-counter reveal">
       <div class="visitor-counter-title">
         <i class="fas fa-chart-bar"></i>
-        Visitor Statistics
+        <span data-en="Visitor Statistics" data-ar="إحصائيات الزوار">Visitor Statistics</span>
       </div>
       <div class="visitor-badge-wrap">
         <img
           src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2FMohamed01032.github.io&count_bg=%2300FF88&title_bg=%230D1B2A&title=Visits&edge_flat=false"
           alt="Visitor Counter" style="height: 32px;" />
       </div>
-      <p class="visitor-note">📊 The counter is updated automatically with each visit (Today / Total)</p>
+      <p class="visitor-note" data-en="📊 The counter is updated automatically with each visit (Today / Total)" data-ar="📊 يتم تحديث العداد تلقائياً مع كل زيارة (اليوم / الإجمالي)">📊 The counter is updated automatically with each visit (Today / Total)</p>
     </div>
 
     <!-- ─── FOOTER ─── -->
     <footer class="footer">
-      <p>Made with <span>♥</span> by Mohammed Elsaeed Fekry • <span>2025</span></p>
-      <p style="margin-top:6px; font-size:0.75rem; opacity:0.5;">Cyber Security Student @ Delta University</p>
+      <p data-en="Made with <span>♥</span> by Mohammed Elsaeed Fekry • <span>2025</span>" data-ar="صُنع بـ <span>♥</span> بواسطة محمد السعيد فكري • <span>2025</span>">Made with <span>♥</span> by Mohammed Elsaeed Fekry • <span>2025</span></p>
+      <p style="margin-top:6px; font-size:0.75rem; opacity:0.5;" data-en="Cyber Security Student @ Delta University" data-ar="طالب أمن سيبراني @ جامعة الدلتا">Cyber Security Student @ Delta University</p>
     </footer>
 
   </div><!-- /wrapper -->
@@ -1182,6 +1216,26 @@
   </div>
 
   <script>
+    // ─── LANGUAGE TOGGLE ───
+    const langToggleBtn = document.getElementById('lang-toggle');
+    let currentLang = 'en';
+
+    langToggleBtn.addEventListener('click', () => {
+      currentLang = currentLang === 'en' ? 'ar' : 'en';
+      document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+      langToggleBtn.innerHTML = currentLang === 'en' ? 'عربي <i class="fas fa-globe"></i>' : 'English <i class="fas fa-globe"></i>';
+      
+      document.querySelectorAll('[data-en]').forEach(el => {
+        el.innerHTML = el.getAttribute(`data-${currentLang}`);
+      });
+      
+      // Keep terminal LTR always
+      const terminalBox = document.querySelector('.terminal-box');
+      if(terminalBox) {
+        terminalBox.style.direction = 'ltr';
+      }
+    });
+
     // ─── MATRIX RAIN ───
     const canvas = document.getElementById('matrix-canvas');
     const ctx = canvas.getContext('2d');
