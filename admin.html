@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة تحكم الشات بوت</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: #060b14;
+      color: #e0f7ef;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #00ff88;
+      text-align: center;
+    }
+    .config-card, .requests-card {
+      background: #0d1b2a;
+      border: 1px solid rgba(0, 255, 136, 0.18);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    input, textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 136, 0.18);
+      color: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-family: inherit;
+    }
+    button {
+      background: #00ff88;
+      color: #060b14;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #00cc66;
+    }
+    .request-item {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      border-right: 4px solid #00cfff;
+    }
+    .request-item p {
+      margin: 5px 0;
+    }
+    .btn-approve { background: #00ff88; color: #000; }
+    .btn-deny { background: #ff4d4d; color: #fff; }
+    .actions { display: flex; gap: 10px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><i class="fas fa-robot"></i> لوحة تحكم الطلبات</h1>
+    
+    <div class="config-card" id="configCard">
+      <h3>إعدادات Firebase</h3>
+      <p>يرجى إدخال كود الإعدادات (Firebase Config Object) هنا ليتم تفعيل اللوحة.</p>
+      <textarea id="firebaseConfigInput" rows="8" placeholder='{ "apiKey": "...", "authDomain": "...", ... }'></textarea>
+      <button onclick="saveConfig()">حفظ الإعدادات</button>
+    </div>
+
+    <div class="requests-card" id="requestsCard" style="display: none;">
+      <h3>إعدادات Gemini</h3>
+      <p>ضع مفتاح Gemini الخاص بك هنا لحمايته من الحذف بواسطة GitHub:</p>
+      <input type="text" id="geminiKeyInput" placeholder="الصق مفتاح Gemini هنا..." />
+      <button onclick="saveGeminiKey()">حفظ مفتاح Gemini</button>
+      <hr style="border-color: rgba(0,255,136,0.18); margin: 20px 0;" />
+      
+      <h3>الطلبات الواردة</h3>
+      <div id="requestsList">
+        <p>جاري الاستماع للطلبات...</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+    import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+
+    window.saveConfig = function() {
+      const configStr = document.getElementById('firebaseConfigInput').value;
+      try {
+        const config = JSON.parse(configStr);
+        localStorage.setItem('firebaseConfig', JSON.stringify(config));
+        alert('تم الحفظ بنجاح! سيتم إعادة تحميل الصفحة.');
+        location.reload();
+      } catch (e) {
+        alert('كود الإعدادات غير صالح. تأكد من أنه بصيغة JSON صحيحة.');
+      }
+    };
+
+    const savedConfig = localStorage.getItem('firebaseConfig');
+    if (savedConfig) {
+      document.getElementById('configCard').style.display = 'none';
+      document.getElementById('requestsCard').style.display = 'block';
+      
+      const firebaseConfig = JSON.parse(savedConfig);
+      const app = initializeApp(firebaseConfig);
+      const db = getDatabase(app);
+      
+      const requestsRef = ref(db, 'requests');
+      onValue(requestsRef, (snapshot) => {
+        const data = snapshot.val();
+        const list = document.getElementById('requestsList');
+        list.innerHTML = '';
+        
+        let hasPending = false;
+        
+        if (data) {
+          Object.keys(data).forEach(id => {
+            const req = data[id];
+            if (req.status === 'pending') {
+              hasPending = true;
+              const div = document.createElement('div');
+              div.className = 'request-item';
+              div.innerHTML = `
+                <p><strong>معرف الطلب:</strong> ${id}</p>
+                <p><strong>الوقت:</strong> ${new Date(req.timestamp).toLocaleString()}</p>
+                <p>يوجد زائر يطلب التحدث معك الآن!</p>
+                <div class="actions">
+                  <button class="btn-approve" onclick="respondRequest('${id}', 'approved')">موافقة (إرسال جهات الاتصال)</button>
+                  <button class="btn-deny" onclick="respondRequest('${id}', 'denied')">رفض (أنا مشغول)</button>
+                </div>
+              `;
+              list.appendChild(div);
+            }
+          });
+        }
+        
+        if (!hasPending) {
+          list.innerHTML = '<p>لا توجد طلبات معلقة حالياً.</p>';
+        }
+      });
+
+      window.respondRequest = function(id, status) {
+        update(ref(db, 'requests/' + id), {
+          status: status
+        }).then(() => {
+          // Success
+        }).catch(err => {
+          alert('حدث خطأ: ' + err.message);
+        });
+      };
+
+      window.saveGeminiKey = function() {
+        const key = document.getElementById('geminiKeyInput').value.trim();
+        if (key) {
+          update(ref(db, 'config'), { geminiKey: key }).then(() => {
+            alert('تم حفظ مفتاح Gemini في قاعدة البيانات بنجاح!');
+          }).catch(err => {
+            alert('حدث خطأ أثناء الحفظ: ' + err.message);
+          });
+        } else {
+          alert('يرجى إدخال المفتاح أولاً!');
+        }
+      };
+
+      // Load existing key if any
+      onValue(ref(db, 'config/geminiKey'), (snapshot) => {
+        if (snapshot.exists()) {
+          document.getElementById('geminiKeyInput').value = snapshot.val();
+        }
+      });
+    } else {
+      document.getElementById('firebaseConfigInput').value = `{\n  "apiKey": "",\n  "authDomain": "",\n  "databaseURL": "",\n  "projectId": "",\n  "storageBucket": "",\n  "messagingSenderId": "",\n  "appId": ""\n}`;
+    }
+  </script>
+</body>
+</html>

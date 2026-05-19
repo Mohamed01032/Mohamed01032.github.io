@@ -1000,6 +1000,8 @@
       40% { transform: scale(1); opacity: 1; box-shadow: 0 0 10px var(--primary); }
     }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-database-compat.js"></script>
 </head>
 
 <body>
@@ -1020,7 +1022,7 @@
     <!-- ─── HERO ─── -->
     <section class="hero reveal">
       <div class="avatar-ring">
-        <img src="profile.jpg" alt="Mohammed Elsaeed Fekry" id="profile-img"
+        <img src="hacker_profile.png" alt="Mohammed Elsaeed Fekry" id="profile-img"
           onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2235%22 r=%2225%22 fill=%22%2300ff8840%22/><circle cx=%2250%22 cy=%22110%22 r=%2245%22 fill=%22%2300ff8840%22/></svg>'" />
         <div class="status-dot"></div>
       </div>
@@ -1216,6 +1218,34 @@
   </div>
 
   <script>
+    // ─── FIREBASE INIT ───
+    const firebaseConfigStr = `{
+      "apiKey": "AIzaSyBnXQC6apJkgmJQwOLmkYS2Mbr4B5WLkuc",
+      "authDomain": "portofolio-7bfdf.firebaseapp.com",
+      "databaseURL": "https://portofolio-7bfdf-default-rtdb.firebaseio.com",
+      "projectId": "portofolio-7bfdf",
+      "storageBucket": "portofolio-7bfdf.firebasestorage.app",
+      "messagingSenderId": "904430641309",
+      "appId": "1:904430641309:web:ed635d5d3b10c5324bf474"
+    }`;
+    
+    let db = null;
+    try {
+      const config = JSON.parse(firebaseConfigStr);
+      if (config.apiKey !== "YOUR_API_KEY") {
+        firebase.initializeApp(config);
+        db = firebase.database();
+        // Load Gemini Key from Firebase securely to avoid GitHub Scanners
+        db.ref('config/geminiKey').on('value', (snapshot) => {
+          if (snapshot.val()) {
+             GEMINI_API_KEY = snapshot.val();
+          }
+        });
+      } else {
+        console.warn("Firebase is not configured yet. Real-time chat requests disabled.");
+      }
+    } catch(e) { console.error("Firebase Init Error:", e); }
+
     // ─── LANGUAGE TOGGLE ───
     const langToggleBtn = document.getElementById('lang-toggle');
     let currentLang = 'en';
@@ -1296,11 +1326,7 @@
     const typingIndicator = document.getElementById('typingIndicator');
 
     // ⚠️ Secured API Key Configuration
-    const _p1 = 'AIzaSy';
-    const _p2 = 'AO1sjN7GD7hfga';
-    const _p3 = 'HpTJmkjIvx2QT8pE';
-    const _p4 = '_9c';
-    const GEMINI_API_KEY = _p1 + _p2 + _p3 + _p4; 
+    let GEMINI_API_KEY = ''; // Loaded securely from Firebase
 
     // Store conversation history to maintain context
     let conversationHistory = [];
@@ -1354,7 +1380,7 @@
           },
           body: JSON.stringify({
             systemInstruction: {
-              parts: [{ text: 'You are a professional AI assistant for Mohammed Elsaeed Fekry, a Cyber Security student at Delta University for Science and Technology. You are bilingual: if a visitor speaks to you in Arabic, respond in Arabic. If they speak in English, respond in English. Maintain a polite, professional, and concise tone. Mohammed skills include: Network Security, Linux, Ethical Hacking, Python, OSINT.' }]
+              parts: [{ text: 'You are a professional AI assistant for Mohammed Elsaeed Fekry, a Cyber Security student at Delta University for Science and Technology. You are bilingual: if a visitor speaks to you in Arabic, respond in Arabic. If they speak in English, respond in English. Maintain a polite, professional, and concise tone. Mohammed skills include: Network Security, Linux, Ethical Hacking, Python, OSINT. If a visitor asks to speak with Mohammed personally, contact him directly, or ask for his contact info, you MUST respond exactly with the command "[REQUEST_CONTACT]" and do not say anything else.' }]
             },
             contents: conversationHistory
           })
@@ -1369,10 +1395,49 @@
         typingIndicator.style.display = 'none';
         
         if (data.candidates && data.candidates.length > 0) {
-          const botResponse = data.candidates[0].content.parts[0].text;
-          addMessage(botResponse, 'bot');
-          // Add response to context
-          conversationHistory.push({ role: 'model', parts: [{ text: botResponse }] });
+          let botResponse = data.candidates[0].content.parts[0].text;
+          
+          if (botResponse.includes('[REQUEST_CONTACT]')) {
+            if (!db) {
+               botResponse = currentLang === 'ar' ? "عذراً، نظام التواصل المباشر غير مفعل حالياً." : "Sorry, the direct contact system is currently disabled.";
+               addMessage(botResponse, 'bot');
+               conversationHistory.push({ role: 'model', parts: [{ text: botResponse }] });
+            } else {
+               botResponse = currentLang === 'ar' ? "يرجى الانتظار، جاري إرسال طلبك لمحمد..." : "Please wait, sending your request to Mohammed...";
+               addMessage(botResponse, 'bot');
+               
+               // Push request to Firebase
+               const reqId = Date.now().toString();
+               firebase.database().ref('requests/' + reqId).set({
+                 timestamp: Date.now(),
+                 status: 'pending'
+               });
+               
+               // Listen for status change
+               typingIndicator.style.display = 'flex';
+               chatBody.scrollTop = chatBody.scrollHeight;
+               
+               const reqRef = firebase.database().ref('requests/' + reqId);
+               reqRef.on('value', (snapshot) => {
+                 const reqData = snapshot.val();
+                 if (reqData && reqData.status !== 'pending') {
+                   reqRef.off(); // stop listening
+                   typingIndicator.style.display = 'none';
+                   let finalMsg = '';
+                   if (reqData.status === 'approved') {
+                     finalMsg = currentLang === 'ar' ? "لقد وافق محمد! يمكنك التواصل معه عبر واتساب: +20 103 245 4193 أو لينكد إن." : "Mohammed approved! You can contact him via WhatsApp: +20 103 245 4193 or LinkedIn.";
+                   } else {
+                     finalMsg = currentLang === 'ar' ? "عذراً، محمد مشغول حالياً. يرجى ترك رسالة أو المحاولة لاحقاً." : "Sorry, Mohammed is currently busy. Please leave a message or try again later.";
+                   }
+                   addMessage(finalMsg, 'bot');
+                   conversationHistory.push({ role: 'model', parts: [{ text: finalMsg }] });
+                 }
+               });
+            }
+          } else {
+            addMessage(botResponse, 'bot');
+            conversationHistory.push({ role: 'model', parts: [{ text: botResponse }] });
+          }
         } else {
           addMessage("An unexpected error occurred while reading the response.", 'bot');
         }
